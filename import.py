@@ -1,9 +1,8 @@
-import csv, json, urllib.request, os, time, zipfile, shutil
+import csv, json, urllib.request, os, time, shutil
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://pfdfwvcqkmakgzhgswip.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmZGZ3dmNxa21ha2d6aGdzd2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQyNTksImV4cCI6MjA5MjM2MDI1OX0.5Sc8mSof8C6M_6RtaBtU39mv0YsJGsJ9UmxFfLt7L3Q")
 
-CKAN_API    = "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=registre-des-entreprises"
 DOWNLOAD_DIR = "/tmp/req_data"
 CSV_DIR      = DOWNLOAD_DIR
 
@@ -17,41 +16,6 @@ EMPLOYES = {
     "F": "100-249", "G": "250-499", "H": "500-749", "I": "750-999",
     "J": "1000-2499", "K": "2500-4999", "L": "5000+", "O": "Aucun", "N": ""
 }
-
-def download_data():
-    print("Recherche du fichier ZIP sur Données Québec...")
-    with urllib.request.urlopen(CKAN_API) as r:
-        pkg = json.loads(r.read())
-
-    zip_url = None
-    for resource in pkg["result"]["resources"]:
-        if resource.get("format", "").upper() == "ZIP":
-            zip_url = resource["url"]
-            break
-
-    if not zip_url:
-        raise Exception("Aucun fichier ZIP trouvé dans le dataset")
-
-    print(f"Téléchargement depuis : {zip_url}")
-    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    zip_path = f"{DOWNLOAD_DIR}/req.zip"
-
-    req = urllib.request.Request(zip_url, headers={
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "fr-CA,fr;q=0.9,en-US;q=0.8",
-        "Referer": "https://www.donneesquebec.ca/",
-    })
-    with urllib.request.urlopen(req) as response:
-        with open(zip_path, "wb") as f:
-            f.write(response.read())
-    print("Téléchargement terminé. Extraction...")
-
-    with zipfile.ZipFile(zip_path, "r") as z:
-        z.extractall(DOWNLOAD_DIR)
-
-    os.remove(zip_path)
-    print("Extraction terminée.")
 
 def upsert_table(table, batch):
     data = json.dumps(batch).encode("utf-8")
@@ -74,9 +38,6 @@ def upsert_table(table, batch):
             print(f"  Erreur (tentative {attempt+1}/5): {e}")
             time.sleep(3 * (attempt + 1))
     print("  Batch ignoré après 5 tentatives")
-
-# --- Téléchargement ---
-download_data()
 
 # --- Import noms ---
 print("Import des noms actifs...")
