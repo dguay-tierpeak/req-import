@@ -28,6 +28,14 @@ jobs:
       - name: Télécharger les données REQ
         run: python download.py
 
+      - name: Upload screenshot debug (si erreur)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshot
+          path: debug.png
+          if-no-files-found: ignore
+
       - name: Importer dans Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
