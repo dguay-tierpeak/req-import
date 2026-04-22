@@ -3,7 +3,7 @@ import csv, json, urllib.request, os, time, zipfile, shutil
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://pfdfwvcqkmakgzhgswip.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmZGZ3dmNxa21ha2d6aGdzd2lwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQyNTksImV4cCI6MjA5MjM2MDI1OX0.5Sc8mSof8C6M_6RtaBtU39mv0YsJGsJ9UmxFfLt7L3Q")
 
-CKAN_API    = "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=registre-des-entreprises-du-quebec"
+CKAN_API    = "https://www.donneesquebec.ca/recherche/api/3/action/package_show?id=registre-des-entreprises"
 DOWNLOAD_DIR = "/tmp/req_data"
 CSV_DIR      = DOWNLOAD_DIR
 
