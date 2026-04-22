@@ -36,7 +36,15 @@ def download_data():
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
     zip_path = f"{DOWNLOAD_DIR}/req.zip"
 
-    urllib.request.urlretrieve(zip_url, zip_path)
+    req = urllib.request.Request(zip_url, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "fr-CA,fr;q=0.9,en-US;q=0.8",
+        "Referer": "https://www.donneesquebec.ca/",
+    })
+    with urllib.request.urlopen(req) as response:
+        with open(zip_path, "wb") as f:
+            f.write(response.read())
     print("Téléchargement terminé. Extraction...")
 
     with zipfile.ZipFile(zip_path, "r") as z:
